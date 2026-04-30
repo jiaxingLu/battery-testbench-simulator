@@ -1,4 +1,6 @@
+import time
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
+from battery_testbench_sim.nodes.verifier import Verifier
 
 
 def main():
@@ -8,10 +10,17 @@ def main():
         soc=80,
         state=1,
         fault_level=0,
-        cycle_time_s=0.5,  # 先慢一点，方便观察
+        cycle_time_s=0.5,
     )
+    verifier = Verifier()
 
-    bms.run_forever()
+    try:
+        while True:
+            frame = bms.run_once()
+            verifier.print_status(frame)
+            time.sleep(bms.cycle_time_s)
+    except KeyboardInterrupt:
+        print("\nSystem stopped.")
 
 
 if __name__ == "__main__":
