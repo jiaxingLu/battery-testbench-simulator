@@ -1,5 +1,3 @@
-import logging
-
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
@@ -11,19 +9,27 @@ from battery_testbench_sim.runtime.supervisor import Supervisor
 
 def main():
     setup_logging()
-    logger = logging.getLogger(__name__)
 
     bms_config = load_config("configs/bms_default.yaml")
+    can_config = load_config("configs/can_virtual.yaml")
 
     bms_cfg = bms_config["bms"]
     fault_cfg = bms_config.get("fault", {})
+    can_cfg = can_config["can"]
+    msg_cfg = can_config["messages"]
 
     bms = FakeBMS(**bms_cfg)
     verifier = Verifier()
     fault_injector = FaultInjector(fault_cfg)
 
-    bus_tx = CanBus(interface="virtual", channel="testbench_runtime")
-    bus_rx = CanBus(interface="virtual", channel="testbench_runtime")
+    bus_tx = CanBus(
+        interface=can_cfg["interface"],
+        channel=can_cfg["channel"],
+    )
+    bus_rx = CanBus(
+        interface=can_cfg["interface"],
+        channel=can_cfg["channel"],
+    )
 
     supervisor = Supervisor(
         bms=bms,
@@ -31,7 +37,7 @@ def main():
         bus_tx=bus_tx,
         bus_rx=bus_rx,
         fault_injector=fault_injector,
-        bms_status_id=0x180,
+        bms_status_id=int(msg_cfg["bms_status_id"]),
     )
 
     supervisor.run()

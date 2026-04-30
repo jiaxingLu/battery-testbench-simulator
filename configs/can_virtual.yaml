@@ -1,0 +1,6 @@
+can:
+  interface: virtual
+  channel: testbench_runtime
+
+messages:
+  bms_status_id: 0x180
