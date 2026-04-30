@@ -1,10 +1,11 @@
-from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
 from battery_testbench_sim.logging_setup import setup_logging
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
+from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.nodes.verifier import Verifier
+from battery_testbench_sim.providers.static_provider import StaticBMSDataProvider
 from battery_testbench_sim.runtime.supervisor import Supervisor
 
 
@@ -19,7 +20,19 @@ def main():
     can_cfg = can_config["can"]
     msg_cfg = can_config["messages"]
 
-    bms = FakeBMS(**bms_cfg)
+    provider = StaticBMSDataProvider(
+        pack_voltage=bms_cfg["pack_voltage"],
+        pack_current=bms_cfg["pack_current"],
+        soc=bms_cfg["soc"],
+        state=bms_cfg["state"],
+        fault_level=bms_cfg["fault_level"],
+    )
+
+    bms = FakeBMS(
+        data_provider=provider,
+        cycle_time_s=bms_cfg["cycle_time_s"],
+    )
+
     verifier = Verifier()
     vcu = FakeVCU()
     fault_injector = FaultInjector(fault_cfg)

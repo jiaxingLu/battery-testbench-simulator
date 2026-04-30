@@ -1,15 +1,18 @@
 from battery_testbench_sim.messages.bms_status import decode_bms_status
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
+from battery_testbench_sim.providers.static_provider import StaticBMSDataProvider
 
 
 def test_fake_bms_builds_valid_status_frame():
-    bms = FakeBMS(
+    provider = StaticBMSDataProvider(
         pack_voltage=410.5,
         pack_current=-12.3,
         soc=75,
         state=1,
         fault_level=0,
     )
+
+    bms = FakeBMS(data_provider=provider)
 
     frame = bms.build_status_frame()
     decoded = decode_bms_status(frame)
