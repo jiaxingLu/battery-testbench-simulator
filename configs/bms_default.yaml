@@ -1,0 +1,7 @@
+bms:
+  pack_voltage: 300.0
+  pack_current: -5.0
+  soc: 30
+  state: 1
+  fault_level: 0
+  cycle_time_s: 0.5
