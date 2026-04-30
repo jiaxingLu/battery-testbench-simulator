@@ -1,6 +1,7 @@
-from battery_testbench_sim.messages.bms_status import encode_bms_status
 import logging
 import time
+
+from battery_testbench_sim.messages.bms_status import encode_bms_status
 
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ class Supervisor:
         bus_rx,
         fault_injector,
         bms_status_id,
+        vcu=None,
     ):
         self.bms = bms
         self.verifier = verifier
@@ -22,6 +24,7 @@ class Supervisor:
         self.bus_rx = bus_rx
         self.fault_injector = fault_injector
         self.bms_status_id = bms_status_id
+        self.vcu = vcu
 
         self.cycle_count = 0
 
@@ -30,6 +33,9 @@ class Supervisor:
             while True:
                 data = self.bms.get_status_data()
                 data = self.fault_injector.apply(data, self.cycle_count)
+
+                if self.vcu is not None:
+                    data = self.vcu.process_bms_status(data)
 
                 frame = encode_bms_status(data)
 

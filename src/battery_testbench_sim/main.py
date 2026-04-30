@@ -1,3 +1,4 @@
+from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
@@ -20,6 +21,7 @@ def main():
 
     bms = FakeBMS(**bms_cfg)
     verifier = Verifier()
+    vcu = FakeVCU()
     fault_injector = FaultInjector(fault_cfg)
 
     bus_tx = CanBus(
@@ -38,6 +40,7 @@ def main():
         bus_rx=bus_rx,
         fault_injector=fault_injector,
         bms_status_id=int(msg_cfg["bms_status_id"]),
+        vcu=vcu,
     )
 
     supervisor.run()
