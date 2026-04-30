@@ -1,0 +1,10 @@
+[project]
+name = "battery-testbench-simulator"
+version = "0.1.0"
+description = "Industrial-grade battery testbench simulator with fake BMS, VCU, CAN communication, logging, fault injection, and verification."
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
