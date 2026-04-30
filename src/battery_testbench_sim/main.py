@@ -1,9 +1,14 @@
 import time
+import logging
+from battery_testbench_sim.logging_setup import setup_logging
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
 from battery_testbench_sim.nodes.verifier import Verifier
 
 
 def main():
+    setup_logging()
+    logger = logging.getLogger(__name__)
+
     bms = FakeBMS(
         pack_voltage=400.0,
         pack_current=-5.0,
@@ -17,10 +22,10 @@ def main():
     try:
         while True:
             frame = bms.run_once()
-            verifier.print_status(frame)
+            verifier.log_status(frame)
             time.sleep(bms.cycle_time_s)
     except KeyboardInterrupt:
-        print("\nSystem stopped.")
+        logger.info("System stopped by user.")
 
 
 if __name__ == "__main__":
