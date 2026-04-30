@@ -5,3 +5,9 @@ bms:
   state: 1
   fault_level: 0
   cycle_time_s: 0.5
+
+fault:
+  enabled: true
+  trigger_after_cycles: 5
+  fault_level: 2
+  soc_override: 5
