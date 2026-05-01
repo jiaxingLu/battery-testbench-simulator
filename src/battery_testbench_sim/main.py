@@ -1,5 +1,6 @@
 import argparse
 
+from battery_testbench_sim.infrastructure.csv_logger import CSVLogger
 from battery_testbench_sim.infrastructure.logging_setup import setup_logging
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
@@ -34,7 +35,8 @@ def parse_args():
 
 
 def main():
-    setup_logging()
+    log_file = setup_logging()
+    csv_file = log_file.with_name(log_file.stem + "_bms_status.csv")
     args = parse_args()
 
     bms_config = load_config(args.bms_config)
@@ -64,7 +66,20 @@ def main():
         cycle_time_s=bms_cfg["cycle_time_s"],
     )
 
-    verifier = Verifier()
+    csv_logger = CSVLogger(
+    file_path=csv_file,
+    fieldnames=[
+        "timestamp",
+        "signal",
+        "pack_voltage",
+        "pack_current",
+        "soc",
+        "state",
+        "fault",
+    ],
+)
+
+    verifier = Verifier(csv_logger=csv_logger)
     vcu = FakeVCU()
     fault_injector = FaultInjector(fault_cfg)
 
