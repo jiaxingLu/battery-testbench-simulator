@@ -43,8 +43,10 @@ class Supervisor:
         try:
             while True:
                 data = self.bms.get_status_data()
-
                 data = self.fault_injector.apply(data, self.cycle_count)
+
+                if self.cycle_count >= 30:
+                    data["pack_current"] = 0.0
 
                 ocv = self._recompute_voltage(data["soc"])
 
@@ -53,7 +55,7 @@ class Supervisor:
                     dt=self.bms.cycle_time_s,
                 )
 
-                data["pack_voltage"] = ocv + v_rc
+                data["pack_voltage"] = ocv - v_rc
 
                 if self.vcu is not None:
                     data = self.vcu.process_bms_status(data)
