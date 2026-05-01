@@ -1,6 +1,6 @@
 scenario:
   type: discharge
-  end_soc: 5
+  end_soc: 0
   soc_step_per_cycle: 1
   pack_voltage_end: 280.0
 

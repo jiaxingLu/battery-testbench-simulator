@@ -2,6 +2,8 @@ import logging
 import time
 
 from battery_testbench_sim.messages.bms_status import encode_bms_status
+from battery_testbench_sim.models.ocv import ocv_from_soc
+from battery_testbench_sim.models.rc_model import RCModel
 
 
 logger = logging.getLogger(__name__)
@@ -26,13 +28,32 @@ class Supervisor:
         self.bms_status_id = bms_status_id
         self.vcu = vcu
 
+        self.rc_model = RCModel()
         self.cycle_count = 0
+
+    def _recompute_voltage(self, soc: int) -> float:
+        cell_v = ocv_from_soc(soc)
+
+        v_min = 280.0
+        v_max = 300.0
+
+        return v_min + (v_max - v_min) * (cell_v - 3.0) / (4.2 - 3.0)
 
     def run(self):
         try:
             while True:
                 data = self.bms.get_status_data()
+
                 data = self.fault_injector.apply(data, self.cycle_count)
+
+                ocv = self._recompute_voltage(data["soc"])
+
+                v_rc = self.rc_model.step(
+                    current=data["pack_current"],
+                    dt=self.bms.cycle_time_s,
+                )
+
+                data["pack_voltage"] = ocv + v_rc
 
                 if self.vcu is not None:
                     data = self.vcu.process_bms_status(data)
