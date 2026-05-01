@@ -6,12 +6,15 @@ class FaultInjector:
         self.soc_override = config.get("soc_override", None)
 
     def apply(self, data: dict, cycle_count: int) -> dict:
+        # 不启用 → 原样返回
         if not self.enabled:
             return data
 
-        if cycle_count < self.trigger_after_cycles:
+        # 未到触发点 → 原样返回
+        if self.trigger_after_cycles < 0 or cycle_count < self.trigger_after_cycles:
             return data
 
+        # 触发 fault
         modified = dict(data)
         modified["fault_level"] = self.fault_level
 
