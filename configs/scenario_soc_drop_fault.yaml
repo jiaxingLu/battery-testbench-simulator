@@ -6,6 +6,6 @@ scenario:
 
 fault:
   enabled: true
-  trigger_after_cycles: 5
+  trigger_after_cycles: 2
   fault_level: 2
   soc_override: 5
