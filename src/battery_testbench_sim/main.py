@@ -1,9 +1,9 @@
 import argparse
 
+from battery_testbench_sim.infrastructure.logging_setup import setup_logging
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
-from battery_testbench_sim.logging_setup import setup_logging
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
 from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.nodes.verifier import Verifier
