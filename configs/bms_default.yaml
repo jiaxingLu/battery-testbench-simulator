@@ -6,8 +6,13 @@ bms:
   fault_level: 0
   cycle_time_s: 0.5
 
+scenario:
+  end_soc: 5
+  soc_step_per_cycle: 1
+  pack_voltage_end: 280.0
+
 fault:
-  enabled: true
+  enabled: false
   trigger_after_cycles: 5
   fault_level: 2
   soc_override: 5

@@ -1,3 +1,4 @@
+from battery_testbench_sim.providers.scenario_provider import ScenarioBMSDataProvider
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
@@ -19,14 +20,18 @@ def main():
     fault_cfg = bms_config.get("fault", {})
     can_cfg = can_config["can"]
     msg_cfg = can_config["messages"]
+    scenario_cfg = bms_config.get("scenario", {})
 
-    provider = StaticBMSDataProvider(
-        pack_voltage=bms_cfg["pack_voltage"],
-        pack_current=bms_cfg["pack_current"],
-        soc=bms_cfg["soc"],
-        state=bms_cfg["state"],
-        fault_level=bms_cfg["fault_level"],
-    )
+    provider = ScenarioBMSDataProvider(
+    start_soc=bms_cfg["soc"],
+    end_soc=scenario_cfg.get("end_soc", 5),
+    soc_step_per_cycle=scenario_cfg.get("soc_step_per_cycle", 1),
+    pack_voltage_start=bms_cfg["pack_voltage"],
+    pack_voltage_end=scenario_cfg.get("pack_voltage_end", 280.0),
+    pack_current=bms_cfg["pack_current"],
+    state=bms_cfg["state"],
+    fault_level=bms_cfg["fault_level"],
+)
 
     bms = FakeBMS(
         data_provider=provider,
