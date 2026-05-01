@@ -1,7 +1,7 @@
 from battery_testbench_sim.providers.scenario_provider import ScenarioBMSDataProvider
 
 
-def test_scenario_provider_decreases_soc_per_cycle():
+def test_scenario_provider_decreases_soc_by_configured_step():
     provider = ScenarioBMSDataProvider(
         start_soc=30,
         end_soc=5,
@@ -55,6 +55,6 @@ def test_scenario_provider_interpolates_voltage():
     data_1 = provider.get_status_data()
     data_2 = provider.get_status_data()
 
-    assert data_0["pack_voltage"] == 330.0
-    assert data_1["pack_voltage"] == 315.0
-    assert data_2["pack_voltage"] == 300.0
+    assert data_0["soc"] == 30
+    assert data_1["soc"] == 20
+    assert data_2["soc"] == 10
