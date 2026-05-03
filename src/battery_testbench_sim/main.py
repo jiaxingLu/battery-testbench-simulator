@@ -52,13 +52,14 @@ def main():
 
     provider = ScenarioBMSDataProvider(
         start_soc=bms_cfg["soc"],
-        end_soc=scenario_cfg.get("end_soc", 5),
+        end_soc=scenario_cfg.get("end_soc", 0),
         soc_step_per_cycle=scenario_cfg.get("soc_step_per_cycle", 1),
         pack_voltage_start=bms_cfg["pack_voltage"],
         pack_voltage_end=scenario_cfg.get("pack_voltage_end", 280.0),
         pack_current=bms_cfg["pack_current"],
         state=bms_cfg["state"],
         fault_level=bms_cfg["fault_level"],
+        rest_cycles_after_end=scenario_cfg.get("rest_cycles_after_end"),
     )
 
     bms = FakeBMS(

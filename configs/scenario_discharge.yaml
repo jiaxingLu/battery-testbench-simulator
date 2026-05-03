@@ -3,6 +3,7 @@ scenario:
   end_soc: 0
   soc_step_per_cycle: 1
   pack_voltage_end: 280.0
+  rest_cycles_after_end: 40   # rest duration = rest_cycles_after_end * cycle_time_s
 
 fault:
   enabled: false
