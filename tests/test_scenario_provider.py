@@ -58,3 +58,45 @@ def test_scenario_provider_interpolates_voltage():
     assert data_0["soc"] == 30
     assert data_1["soc"] == 20
     assert data_2["soc"] == 10
+
+
+def test_scenario_provider_stops_after_configured_rest_cycles():
+    provider = ScenarioBMSDataProvider(
+        start_soc=3,
+        end_soc=0,
+        soc_step_per_cycle=1,
+        pack_voltage_start=300.0,
+        pack_voltage_end=280.0,
+        pack_current=-5.0,
+        state=1,
+        fault_level=0,
+        rest_cycles_after_end=2,
+    )
+
+    data_0 = provider.get_status_data()
+    data_1 = provider.get_status_data()
+    data_2 = provider.get_status_data()
+    data_3 = provider.get_status_data()
+    data_4 = provider.get_status_data()
+
+    assert data_0["soc"] == 3
+    assert data_0["pack_current"] == -5.0
+
+    assert data_1["soc"] == 2
+    assert data_1["pack_current"] == -5.0
+
+    assert data_2["soc"] == 1
+    assert data_2["pack_current"] == -5.0
+
+    assert data_3["soc"] == 0
+    assert data_3["pack_current"] == 0.0
+
+    assert data_4["soc"] == 0
+    assert data_4["pack_current"] == 0.0
+
+    try:
+        provider.get_status_data()
+    except StopIteration as exc:
+        assert "Scenario completed" in str(exc)
+    else:
+        raise AssertionError("Expected StopIteration after configured rest cycles.")
