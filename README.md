@@ -151,6 +151,7 @@ python3 scripts/fit_tau.py logs/<run>_raw_trace.csv
 
 Do not use `*_bms_status.csv` for tau fitting. The fitting script should reject it as not observable when the voltage recovery is dominated by CAN quantization.
 
+
 ## Architecture
 
 See:
@@ -166,3 +167,10 @@ The system is structured into:
 - Node layer: `FakeBMS`, `FakeVCU`, `Verifier`
 - Runtime layer: `Supervisor`
 - Infrastructure layer: virtual CAN, CSV logging, structured logging, config loading
+
+## Project Status
+
+The current validated project status is documented in:
+
+```text
+docs/status.md
