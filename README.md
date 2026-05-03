@@ -113,22 +113,40 @@ PYTHONPATH=src python3 -m battery_testbench_sim.main \
 Plot the latest raw physical trace:
 
 ```bash
-raw_csv=$(ls -t logs/*_raw_trace.csv | head -n 1)
-python3 scripts/plot_bms_csv.py "$raw_csv"
+python3 scripts/plot_bms_csv.py --latest-raw
 ```
 
 Plot the latest CAN-decoded BMS status:
 
 ```bash
-can_csv=$(ls -t logs/*_bms_status.csv | head -n 1)
-python3 scripts/plot_bms_csv.py "$can_csv"
+python3 scripts/plot_bms_csv.py --latest-bms
 ```
 
-Fit the RC relaxation time from the raw trace:
+Fit the RC relaxation time from the latest raw trace:
 
 ```bash
-raw_csv=$(ls -t logs/*_raw_trace.csv | head -n 1)
-python3 scripts/fit_tau.py "$raw_csv"
+python3 scripts/fit_tau.py --latest-raw
+```
+
+Verify that CAN-decoded BMS voltage is not suitable for tau fitting:
+
+```bash
+python3 scripts/fit_tau.py --latest-bms
+```
+
+Expected behavior:
+
+```text
+--latest-raw  → fits tau from v_rc_raw
+--latest-bms  → rejects CAN-decoded voltage as not observable when quantized
+```
+
+Explicit file paths are still supported:
+
+```bash
+python3 scripts/plot_bms_csv.py logs/<run>_raw_trace.csv
+python3 scripts/plot_bms_csv.py logs/<run>_bms_status.csv
+python3 scripts/fit_tau.py logs/<run>_raw_trace.csv
 ```
 
 Do not use `*_bms_status.csv` for tau fitting. The fitting script should reject it as not observable when the voltage recovery is dominated by CAN quantization.
