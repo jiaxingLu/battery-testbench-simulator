@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 from pathlib import Path
 import sys
 
@@ -185,6 +186,69 @@ def fit_voltage_without_known_ocv(t: np.ndarray, voltage: np.ndarray):
     )
 
 
+def find_latest_csv(pattern: str, log_dir: str = "logs") -> Path:
+    log_path = Path(log_dir)
+
+    matches = sorted(
+        log_path.glob(pattern),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+
+    if not matches:
+        raise RuntimeError(f"No CSV files found for pattern: {log_path / pattern}")
+
+    return matches[0]
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Fit RC relaxation time from simulator CSV output."
+    )
+
+    parser.add_argument(
+        "csv_file",
+        nargs="?",
+        help="CSV file to analyze.",
+    )
+
+    parser.add_argument(
+        "--latest-raw",
+        action="store_true",
+        help="Use latest logs/*_raw_trace.csv file.",
+    )
+
+    parser.add_argument(
+        "--latest-bms",
+        action="store_true",
+        help="Use latest logs/*_bms_status.csv file.",
+    )
+
+    return parser.parse_args()
+
+
+def resolve_csv_path(args: argparse.Namespace) -> Path:
+    selected_modes = [
+        args.csv_file is not None,
+        args.latest_raw,
+        args.latest_bms,
+    ]
+
+    if sum(selected_modes) != 1:
+        raise RuntimeError(
+            "Specify exactly one input mode: <csv_file>, --latest-raw, or --latest-bms."
+        )
+
+    if args.latest_raw:
+        return find_latest_csv("*_raw_trace.csv")
+
+    if args.latest_bms:
+        return find_latest_csv("*_bms_status.csv")
+
+    return Path(args.csv_file)
+
+
+
 def fit_tau(csv_file: str) -> int:
     csv_path = Path(csv_file)
     df = pd.read_csv(csv_path)
@@ -292,8 +356,10 @@ def fit_tau(csv_file: str) -> int:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 scripts/fit_tau.py <csv_file>")
-        raise SystemExit(1)
-
-    raise SystemExit(fit_tau(sys.argv[1]))
+    try:
+        args = parse_args()
+        csv_path = resolve_csv_path(args)
+        raise SystemExit(fit_tau(str(csv_path)))
+    except RuntimeError as exc:
+        print(f"ERROR: {exc}")
+        raise SystemExit(2)
