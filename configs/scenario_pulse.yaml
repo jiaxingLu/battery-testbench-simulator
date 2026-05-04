@@ -1,0 +1,13 @@
+scenario:
+  type: pulse
+  soc: 50
+  pre_rest_cycles: 5
+  pulse_current: -5.0
+  pulse_cycles: 10
+  post_rest_cycles: 40
+  pack_voltage: 300.0
+
+fault:
+  enabled: false
+  trigger_after_cycles: 0
+  fault_level: 0

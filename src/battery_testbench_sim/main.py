@@ -9,6 +9,7 @@ from battery_testbench_sim.nodes.fake_bms import FakeBMS
 from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.nodes.verifier import Verifier
 from battery_testbench_sim.providers.scenario_provider import ScenarioBMSDataProvider
+from battery_testbench_sim.providers.pulse_provider import PulseBMSDataProvider
 from battery_testbench_sim.runtime.supervisor import Supervisor
 
 
@@ -68,17 +69,33 @@ def main():
     scenario_cfg = scenario_config.get("scenario", {})
     fault_cfg = scenario_config.get("fault", {})
 
-    provider = ScenarioBMSDataProvider(
-        start_soc=bms_cfg["soc"],
-        end_soc=scenario_cfg.get("end_soc", 0),
-        soc_step_per_cycle=scenario_cfg.get("soc_step_per_cycle", 1),
-        pack_voltage_start=bms_cfg["pack_voltage"],
-        pack_voltage_end=scenario_cfg.get("pack_voltage_end", 280.0),
-        pack_current=bms_cfg["pack_current"],
-        state=bms_cfg["state"],
-        fault_level=bms_cfg["fault_level"],
-        rest_cycles_after_end=scenario_cfg.get("rest_cycles_after_end"),
-    )
+    scenario_type = scenario_cfg.get("type", "discharge")
+
+    if scenario_type == "discharge":
+        provider = ScenarioBMSDataProvider(
+            start_soc=bms_cfg["soc"],
+            end_soc=scenario_cfg.get("end_soc", 0),
+            soc_step_per_cycle=scenario_cfg.get("soc_step_per_cycle", 1),
+            pack_voltage_start=bms_cfg["pack_voltage"],
+            pack_voltage_end=scenario_cfg.get("pack_voltage_end", 280.0),
+            pack_current=bms_cfg["pack_current"],
+            state=bms_cfg["state"],
+            fault_level=bms_cfg["fault_level"],
+            rest_cycles_after_end=scenario_cfg.get("rest_cycles_after_end"),
+        )
+    elif scenario_type == "pulse":
+        provider = PulseBMSDataProvider(
+            soc=scenario_cfg.get("soc", bms_cfg["soc"]),
+            pre_rest_cycles=scenario_cfg.get("pre_rest_cycles", 0),
+            pulse_current=scenario_cfg.get("pulse_current", bms_cfg["pack_current"]),
+            pulse_cycles=scenario_cfg.get("pulse_cycles", 1),
+            post_rest_cycles=scenario_cfg.get("post_rest_cycles", 0),
+            pack_voltage=scenario_cfg.get("pack_voltage", bms_cfg["pack_voltage"]),
+            state=bms_cfg["state"],
+            fault_level=bms_cfg["fault_level"],
+        )
+    else:
+        raise ValueError(f"Unsupported scenario type: {scenario_type}")
 
     bms = FakeBMS(
         data_provider=provider,

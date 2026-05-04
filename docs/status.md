@@ -205,6 +205,29 @@ Expected behavior:
 [PASS] quick audit completed successfully.
 ```
 
+Run pulse scenario:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_pulse.yaml \
+  --no-sleep \
+  --output-dir logs/pulse_test
+```
+
+Expected behavior:
+
+```text
+Scenario completed
+```
+
+Expected current sequence:
+
+```text
+5 cycles rest
+10 cycles discharge pulse
+40 cycles post-rest
+```
+
 ## Current Test Coverage
 
 Current tests cover:
@@ -225,6 +248,7 @@ Current tests cover:
 - configurable output directory for runtime logs and CSV layers
 - runtime CLI integration test for log, raw trace, and CAN status output layers
 - quick audit helper for output-layer and tau-observability sanity checks
+- pulse scenario rest-pulse-rest phase behavior
 
 ## Recent Checkpoints
 
@@ -262,8 +286,8 @@ Phase 5 — Scenario expansion and project hardening
 
 Recommended next tasks:
 
-1. Add pulse scenario support.
+1. Add pulse scenario runtime integration test.
 2. Add GitHub Actions CI for pytest.
 3. Polish README demo section with example outputs.
 
-Do not expand model complexity before pulse-scenario behavior, CI, and demo documentation are locked.
+Do not expand model complexity before pulse-scenario runtime integration, CI, and demo documentation are locked.

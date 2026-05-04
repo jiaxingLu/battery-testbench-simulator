@@ -86,6 +86,38 @@ configs/scenario_discharge.yaml
 configs/scenario_soc_drop_fault.yaml
 ```
 
+## Pulse Scenario
+
+A pulse scenario is available for transient RC-model and relaxation testing:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_pulse.yaml \
+  --no-sleep \
+  --output-dir logs/pulse_test
+```
+
+The current pulse scenario follows a fixed-SOC sequence:
+
+```text
+pre-rest → discharge pulse → post-rest
+```
+
+Example configuration:
+
+```yaml
+scenario:
+  type: pulse
+  soc: 50
+  pre_rest_cycles: 5
+  pulse_current: -5.0
+  pulse_cycles: 10
+  post_rest_cycles: 40
+  pack_voltage: 300.0
+```
+
+In this first version, SOC is held constant during the pulse. The purpose is to exercise transient voltage drop, RC polarization, and relaxation behavior rather than capacity integration.
+
 ## Fault Injection
 
 Fault injection can override selected BMS status fields after a configured cycle count.
