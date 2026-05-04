@@ -42,14 +42,20 @@ def parse_args():
         default=None,
         help="Maximum number of runtime cycles to execute before stopping.",
     )
+    parser.add_argument(
+        "--output-dir",
+        default="logs",
+        help="Directory for runtime log and CSV output files.",
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
 
-    log_file = setup_logging()
+    log_file = setup_logging(output_dir=args.output_dir)
     csv_file = log_file.with_name(log_file.stem + "_bms_status.csv")
+    raw_trace_file = log_file.with_name(log_file.stem + "_raw_trace.csv")
 
     bms_config = load_config(args.bms_config)
     can_config = load_config(args.can_config)
@@ -113,6 +119,7 @@ def main():
         fault_injector=fault_injector,
         bms_status_id=int(msg_cfg["bms_status_id"]),
         vcu=vcu,
+        raw_trace_file_path=raw_trace_file,
         sleep_enabled=not args.no_sleep,
         max_cycles=args.max_cycles,
     )

@@ -4,10 +4,14 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Union
 
 
-def setup_logging(level: int = logging.INFO) -> Path:
-    log_dir = Path("logs")
+def setup_logging(
+    level: int = logging.INFO,
+    output_dir: Union[str, Path] = "logs",
+) -> Path:
+    log_dir = Path(output_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")

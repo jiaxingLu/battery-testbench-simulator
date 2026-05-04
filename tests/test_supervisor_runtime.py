@@ -101,3 +101,39 @@ def test_max_cycles_rejects_negative_value():
         assert "max_cycles must be non-negative" in str(exc)
     else:
         raise AssertionError("Expected ValueError for negative max_cycles.")    
+    
+def test_supervisor_uses_explicit_raw_trace_file_path(tmp_path):
+    raw_trace_file = tmp_path / "custom_raw_trace.csv"
+
+    supervisor = Supervisor(
+        bms=DummyBMS(),
+        verifier=DummyVerifier(),
+        bus_tx=DummyBus(),
+        bus_rx=DummyBus(),
+        fault_injector=DummyFaultInjector(),
+        bms_status_id=0x100,
+        raw_trace_enabled=True,
+        raw_trace_file_path=raw_trace_file,
+        sleep_enabled=False,
+    )
+
+    try:
+        supervisor._write_raw_trace(
+            data={
+                "soc": 50,
+                "pack_current": -5.0,
+                "pack_voltage": 299.5,
+                "state": 1,
+                "fault_level": 0,
+            },
+            ocv=300.0,
+            v_rc=0.5,
+        )
+    finally:
+        supervisor.raw_trace_logger.close()
+
+    assert raw_trace_file.exists()
+
+    content = raw_trace_file.read_text(encoding="utf-8")
+    assert "pack_voltage_raw" in content
+    assert "299.5" in content

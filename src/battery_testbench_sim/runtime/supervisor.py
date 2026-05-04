@@ -25,6 +25,7 @@ class Supervisor:
         vcu=None,
         raw_trace_enabled=True,
         raw_trace_dir="logs",
+        raw_trace_file_path: Optional[Path] = None,
         sleep_enabled=True,
         max_cycles: Optional[int] = None,
     ):
@@ -46,8 +47,11 @@ class Supervisor:
 
         self.raw_trace_logger = None
         if raw_trace_enabled:
-            stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            raw_trace_path = Path(raw_trace_dir) / f"run_{stamp}_raw_trace.csv"
+            if raw_trace_file_path is None:
+                stamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                raw_trace_path = Path(raw_trace_dir) / f"run_{stamp}_raw_trace.csv"
+            else:
+                raw_trace_path = Path(raw_trace_file_path)
 
             self.raw_trace_logger = CSVLogger(
                 raw_trace_path,

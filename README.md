@@ -53,6 +53,18 @@ PYTHONPATH=src python3 -m battery_testbench_sim.main \
 
 `--max-cycles` is a runtime guard. It stops the supervisor loop after the configured number of cycles and does not change the scenario provider itself.
 
+Run a scenario and write outputs to a custom directory:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep \
+  --max-cycles 10 \
+  --output-dir logs/test_output_dir
+```
+
+`--output-dir` controls where the runtime log, CAN-decoded BMS status CSV, and raw physical trace CSV are written.
+
 ## Test
 
 ```bash

@@ -175,6 +175,24 @@ Expected output shape:
 
 `cycle_time_s` while skipping wall-clock waiting.
 
+Run a bounded scenario with custom output directory:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep \
+  --max-cycles 10 \
+  --output-dir logs/test_output_dir
+```
+
+Expected output files:
+
+```text
+logs/test_output_dir/run_*.log
+logs/test_output_dir/run_*_bms_status.csv
+logs/test_output_dir/run_*_raw_trace.csv
+```
+
 ## Current Test Coverage
 
 Current tests cover:
@@ -192,6 +210,7 @@ Current tests cover:
 - CSV type detection for plotting
 - supervisor sleep enable/disable behavior
 - supervisor max-cycles runtime guard
+- configurable output directory for runtime logs and CSV layers
 
 ## Recent Checkpoints
 
@@ -230,7 +249,7 @@ Phase 4 — Runtime / CLI polish
 Recommended next tasks:
 
 1. Add a small integration test for scenario execution producing both CSV layers.
-2. Add optional output directory configuration for logs.
-3. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
+2. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
+3. Add pulse scenario support.
 
 Do not expand model complexity before runtime and integration behavior are locked.
