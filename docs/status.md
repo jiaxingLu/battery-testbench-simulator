@@ -193,6 +193,18 @@ logs/test_output_dir/run_*_bms_status.csv
 logs/test_output_dir/run_*_raw_trace.csv
 ```
 
+Run quick end-to-end audit:
+
+```bash
+python3 scripts/quick_audit.py
+```
+
+Expected behavior:
+
+```text
+[PASS] quick audit completed successfully.
+```
+
 ## Current Test Coverage
 
 Current tests cover:
@@ -212,6 +224,7 @@ Current tests cover:
 - supervisor max-cycles runtime guard
 - configurable output directory for runtime logs and CSV layers
 - runtime CLI integration test for log, raw trace, and CAN status output layers
+- quick audit helper for output-layer and tau-observability sanity checks
 
 ## Recent Checkpoints
 
@@ -244,13 +257,13 @@ This avoids mixing communication-layer quantized values with physical-layer mode
 Next phase:
 
 ```text
-Phase 4 — Runtime / CLI polish
+Phase 5 — Scenario expansion and project hardening
 ```
 
 Recommended next tasks:
 
-1. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
-2. Add pulse scenario support.
-3. Add GitHub Actions CI for pytest.
+1. Add pulse scenario support.
+2. Add GitHub Actions CI for pytest.
+3. Polish README demo section with example outputs.
 
-Do not expand model complexity before runtime and integration behavior are locked.
+Do not expand model complexity before pulse-scenario behavior, CI, and demo documentation are locked.

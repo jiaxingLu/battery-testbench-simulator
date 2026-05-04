@@ -182,6 +182,24 @@ python3 scripts/plot_bms_csv.py logs/<run>_bms_status.csv
 python3 scripts/fit_tau.py logs/<run>_raw_trace.csv
 ```
 
+## Quick Audit
+
+Run an end-to-end audit of the simulator output layers:
+
+```bash
+python3 scripts/quick_audit.py
+```
+
+The quick audit runs the default discharge scenario with `--no-sleep`, writes outputs to `logs/quick_audit/<timestamp>/`, and verifies:
+
+```text
+run_*.log
+*_raw_trace.csv
+*_bms_status.csv
+```
+
+It also checks that `v_rc_raw` gives a reasonable RC time constant and that CAN-decoded voltage is not observable for tau fitting.
+
 Do not use `*_bms_status.csv` for tau fitting. The fitting script should reject it as not observable when the voltage recovery is dominated by CAN quantization.
 
 
