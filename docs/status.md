@@ -135,6 +135,22 @@ Expected behavior:
 Verdict: tau is NOT observable from this CSV.
 ```
 
+Run default discharge scenario without wall-clock sleep:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep
+```
+
+Expected behavior:
+
+```text
+Scenario completed
+```
+
+`--no-sleep` keeps simulated time based on `cycle_time_s` while skipping wall-clock waiting.
+
 ## Current Test Coverage
 
 Current tests cover:
@@ -150,6 +166,7 @@ Current tests cover:
 - raw trace tau fitting
 - CAN quantization rejection for tau fitting
 - CSV type detection for plotting
+- supervisor sleep enable/disable behavior
 
 ## Recent Checkpoints
 
@@ -187,7 +204,7 @@ Phase 4 — Runtime / CLI polish
 
 Recommended next tasks:
 
-1. Add an explicit `--max-cycles` or `--no-sleep` runtime option for faster deterministic test runs.
+1. Add an explicit `--max-cycles` runtime guard for bounded manual experiments.
 2. Add a small integration test for scenario execution producing both CSV layers.
 3. Add optional output directory configuration for logs.
 4. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.

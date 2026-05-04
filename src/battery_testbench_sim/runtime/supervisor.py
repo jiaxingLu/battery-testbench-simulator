@@ -24,6 +24,7 @@ class Supervisor:
         vcu=None,
         raw_trace_enabled=True,
         raw_trace_dir="logs",
+        sleep_enabled=True,
     ):
         self.bms = bms
         self.verifier = verifier
@@ -32,6 +33,7 @@ class Supervisor:
         self.fault_injector = fault_injector
         self.bms_status_id = bms_status_id
         self.vcu = vcu
+        self.sleep_enabled = sleep_enabled
 
         self.rc_model = RCModel(R=0.05, C=200.0)
         self.cycle_count = 0
@@ -84,6 +86,10 @@ class Supervisor:
             }
         )
 
+    def _sleep_if_enabled(self) -> None:
+        if self.sleep_enabled:
+            time.sleep(self.bms.cycle_time_s)
+
     def run(self):
         try:
             while True:
@@ -122,7 +128,7 @@ class Supervisor:
                     logger.warning("Unexpected CAN ID: 0x%X", msg.arbitration_id)
 
                 self.cycle_count += 1
-                time.sleep(self.bms.cycle_time_s)
+                self._sleep_if_enabled()
 
         except StopIteration:
             logger.info("Scenario completed.")

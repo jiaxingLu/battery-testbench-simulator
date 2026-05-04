@@ -1,10 +1,10 @@
 import argparse
 
-from battery_testbench_sim.infrastructure.csv_logger import CSVLogger
-from battery_testbench_sim.infrastructure.logging_setup import setup_logging
 from battery_testbench_sim.can_bus import CanBus
 from battery_testbench_sim.config import load_config
 from battery_testbench_sim.faults.fault_injector import FaultInjector
+from battery_testbench_sim.infrastructure.csv_logger import CSVLogger
+from battery_testbench_sim.infrastructure.logging_setup import setup_logging
 from battery_testbench_sim.nodes.fake_bms import FakeBMS
 from battery_testbench_sim.nodes.fake_vcu import FakeVCU
 from battery_testbench_sim.nodes.verifier import Verifier
@@ -31,13 +31,19 @@ def parse_args():
         default="configs/scenario_discharge.yaml",
         help="Path to scenario configuration YAML",
     )
+    parser.add_argument(
+        "--no-sleep",
+        action="store_true",
+        help="Run the scenario without wall-clock sleep between cycles.",
+    )
     return parser.parse_args()
 
 
 def main():
+    args = parse_args()
+
     log_file = setup_logging()
     csv_file = log_file.with_name(log_file.stem + "_bms_status.csv")
-    args = parse_args()
 
     bms_config = load_config(args.bms_config)
     can_config = load_config(args.can_config)
@@ -68,17 +74,17 @@ def main():
     )
 
     csv_logger = CSVLogger(
-    file_path=csv_file,
-    fieldnames=[
-        "timestamp",
-        "signal",
-        "pack_voltage",
-        "pack_current",
-        "soc",
-        "state",
-        "fault",
-    ],
-)
+        file_path=csv_file,
+        fieldnames=[
+            "timestamp",
+            "signal",
+            "pack_voltage",
+            "pack_current",
+            "soc",
+            "state",
+            "fault",
+        ],
+    )
 
     verifier = Verifier(csv_logger=csv_logger)
     vcu = FakeVCU()
@@ -101,6 +107,7 @@ def main():
         fault_injector=fault_injector,
         bms_status_id=int(msg_cfg["bms_status_id"]),
         vcu=vcu,
+        sleep_enabled=not args.no_sleep,
     )
 
     supervisor.run()

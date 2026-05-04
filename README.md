@@ -32,6 +32,16 @@ PYTHONPATH=src python3 -m battery_testbench_sim.main \
   --scenario configs/scenario_discharge.yaml
 ```
 
+Run a scenario without wall-clock sleep between cycles:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep
+```
+
+`--no-sleep` does not change simulated time, SOC trajectory, RC state, raw trace values, or CAN payloads. It only disables `time.sleep(...)` in the runtime loop so deterministic scenarios can complete faster.
+
 ## Test
 
 ```bash
