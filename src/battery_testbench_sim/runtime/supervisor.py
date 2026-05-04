@@ -2,6 +2,7 @@ import logging
 import time
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from battery_testbench_sim.infrastructure.csv_logger import CSVLogger
 from battery_testbench_sim.messages.bms_status import encode_bms_status
@@ -25,6 +26,7 @@ class Supervisor:
         raw_trace_enabled=True,
         raw_trace_dir="logs",
         sleep_enabled=True,
+        max_cycles: Optional[int] = None,
     ):
         self.bms = bms
         self.verifier = verifier
@@ -34,6 +36,10 @@ class Supervisor:
         self.bms_status_id = bms_status_id
         self.vcu = vcu
         self.sleep_enabled = sleep_enabled
+        if max_cycles is not None and max_cycles < 0:
+            raise ValueError("max_cycles must be non-negative.")
+
+        self.max_cycles = max_cycles
 
         self.rc_model = RCModel(R=0.05, C=200.0)
         self.cycle_count = 0
@@ -90,9 +96,19 @@ class Supervisor:
         if self.sleep_enabled:
             time.sleep(self.bms.cycle_time_s)
 
+    def _max_cycles_reached(self) -> bool:
+        if self.max_cycles is None:
+            return False
+
+        return self.cycle_count >= self.max_cycles
+
     def run(self):
         try:
             while True:
+                if self._max_cycles_reached():
+                    logger.info("Max cycles reached: %s", self.max_cycles)
+                    break
+
                 data = self.bms.get_status_data()
                 data = self.fault_injector.apply(data, self.cycle_count)
 

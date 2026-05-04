@@ -57,3 +57,47 @@ def test_sleep_if_disabled_skips_time_sleep(monkeypatch):
     supervisor._sleep_if_enabled()
 
     assert calls == []
+
+def test_max_cycles_disabled_by_default():
+    supervisor = make_supervisor(sleep_enabled=False)
+
+    supervisor.cycle_count = 10
+
+    assert supervisor._max_cycles_reached() is False
+
+
+def test_max_cycles_not_reached_before_limit():
+    supervisor = make_supervisor(sleep_enabled=False)
+    supervisor.max_cycles = 5
+
+    supervisor.cycle_count = 4
+
+    assert supervisor._max_cycles_reached() is False
+
+
+def test_max_cycles_reached_at_limit():
+    supervisor = make_supervisor(sleep_enabled=False)
+    supervisor.max_cycles = 5
+
+    supervisor.cycle_count = 5
+
+    assert supervisor._max_cycles_reached() is True
+
+
+def test_max_cycles_rejects_negative_value():
+    try:
+        Supervisor(
+            bms=DummyBMS(),
+            verifier=DummyVerifier(),
+            bus_tx=DummyBus(),
+            bus_rx=DummyBus(),
+            fault_injector=DummyFaultInjector(),
+            bms_status_id=0x100,
+            raw_trace_enabled=False,
+            sleep_enabled=False,
+            max_cycles=-1,
+        )
+    except ValueError as exc:
+        assert "max_cycles must be non-negative" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for negative max_cycles.")    

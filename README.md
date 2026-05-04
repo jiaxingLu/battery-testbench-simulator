@@ -42,6 +42,17 @@ PYTHONPATH=src python3 -m battery_testbench_sim.main \
 
 `--no-sleep` does not change simulated time, SOC trajectory, RC state, raw trace values, or CAN payloads. It only disables `time.sleep(...)` in the runtime loop so deterministic scenarios can complete faster.
 
+Run a bounded scenario with a maximum cycle guard:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep \
+  --max-cycles 10
+```
+
+`--max-cycles` is a runtime guard. It stops the supervisor loop after the configured number of cycles and does not change the scenario provider itself.
+
 ## Test
 
 ```bash

@@ -36,6 +36,12 @@ def parse_args():
         action="store_true",
         help="Run the scenario without wall-clock sleep between cycles.",
     )
+    parser.add_argument(
+        "--max-cycles",
+        type=int,
+        default=None,
+        help="Maximum number of runtime cycles to execute before stopping.",
+    )
     return parser.parse_args()
 
 
@@ -108,6 +114,7 @@ def main():
         bms_status_id=int(msg_cfg["bms_status_id"]),
         vcu=vcu,
         sleep_enabled=not args.no_sleep,
+        max_cycles=args.max_cycles,
     )
 
     supervisor.run()

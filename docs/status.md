@@ -149,7 +149,31 @@ Expected behavior:
 Scenario completed
 ```
 
-`--no-sleep` keeps simulated time based on `cycle_time_s` while skipping wall-clock waiting.
+`--no-sleep` keeps simulated time based on 
+
+Run a bounded no-sleep scenario:
+
+```bash
+PYTHONPATH=src python3 -m battery_testbench_sim.main \
+  --scenario configs/scenario_discharge.yaml \
+  --no-sleep \
+  --max-cycles 10
+```
+
+Expected behavior:
+
+```text
+Max cycles reached: 10
+```
+
+Expected output shape:
+
+```text
+*_raw_trace.csv   → 10 rows
+*_bms_status.csv  → 10 rows
+```
+
+`cycle_time_s` while skipping wall-clock waiting.
 
 ## Current Test Coverage
 
@@ -167,6 +191,7 @@ Current tests cover:
 - CAN quantization rejection for tau fitting
 - CSV type detection for plotting
 - supervisor sleep enable/disable behavior
+- supervisor max-cycles runtime guard
 
 ## Recent Checkpoints
 
@@ -204,9 +229,8 @@ Phase 4 — Runtime / CLI polish
 
 Recommended next tasks:
 
-1. Add an explicit `--max-cycles` runtime guard for bounded manual experiments.
-2. Add a small integration test for scenario execution producing both CSV layers.
-3. Add optional output directory configuration for logs.
-4. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
+1. Add a small integration test for scenario execution producing both CSV layers.
+2. Add optional output directory configuration for logs.
+3. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
 
 Do not expand model complexity before runtime and integration behavior are locked.
