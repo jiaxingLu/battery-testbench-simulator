@@ -211,6 +211,7 @@ Current tests cover:
 - supervisor sleep enable/disable behavior
 - supervisor max-cycles runtime guard
 - configurable output directory for runtime logs and CSV layers
+- runtime CLI integration test for log, raw trace, and CAN status output layers
 
 ## Recent Checkpoints
 
@@ -248,8 +249,8 @@ Phase 4 — Runtime / CLI polish
 
 Recommended next tasks:
 
-1. Add a small integration test for scenario execution producing both CSV layers.
-2. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
-3. Add pulse scenario support.
+1. Consider a `scripts/run_latest_analysis.sh` helper for one-command scenario + plot + tau audit.
+2. Add pulse scenario support.
+3. Add GitHub Actions CI for pytest.
 
 Do not expand model complexity before runtime and integration behavior are locked.
